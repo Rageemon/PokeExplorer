@@ -13,7 +13,6 @@ export function usePokemon() {
         setLoading(true);
         setError(null);
 
-        // Fetch all 151 original Pokémon
         const pokemonResponse = await axios.get(
           'https://pokeapi.co/api/v2/pokemon?limit=151'
         );
@@ -25,7 +24,6 @@ export function usePokemon() {
         );
         setAllPokemon(pokemonDetails);
 
-        // Fetch types from PokeAPI (only once)
         if (types.length === 0) {
           const typeResponse = await axios.get('https://pokeapi.co/api/v2/type');
           const standardTypes = typeResponse.data.results
@@ -42,7 +40,7 @@ export function usePokemon() {
     };
 
     fetchData();
-  }, []); // Remove page and itemsPerPage dependencies
+  }, []); 
 
   return { allPokemon, types, loading, error };
 }

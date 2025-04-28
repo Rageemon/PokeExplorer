@@ -15,7 +15,6 @@ function Home({ setSelectedPokemon, selectedPokemon }) {
 
   const { allPokemon, types, loading, error } = usePokemon();
 
-  // Filter pokemon based on search and type
   const filteredPokemon = allPokemon.filter((pokemon) => {
     const matchesSearch = pokemon.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedTypes.length
@@ -26,16 +25,13 @@ function Home({ setSelectedPokemon, selectedPokemon }) {
     return matchesSearch && matchesType;
   });
 
-  // Calculate total pages based on filtered results
   const totalPages = Math.ceil(filteredPokemon.length / itemsPerPage);
 
-  // Get current page items
   const currentPokemon = filteredPokemon.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedTypes, filterMode]);

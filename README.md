@@ -49,7 +49,7 @@ A Small app for my Internship Assignment
 
 ## 🌐 Live Demo
 
-[View Live Demo](your-deployment-url-here)
+[View Live Demo](https://pokeexplorer.vercel.app)
 
 ## 💻 Local Development
 

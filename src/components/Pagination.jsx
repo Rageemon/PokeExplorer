@@ -62,9 +62,6 @@ function Pagination({ currentBatch, totalBatches, onBatchChange, totalPokemon })
         </Button>
       </div>
 
-      <span className="text-gray-200">
-        Batch {currentBatch} of {totalBatches} (Total: {totalPokemon} Pokémon)
-      </span>
     </div>
   );
 }

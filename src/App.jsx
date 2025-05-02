@@ -1,16 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Home from './pages/Home.jsx';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { PokemonProvider } from './contexts/PokemonContext';
+import ErrorBoundary from './hooks/ErrorBoundary';
+import Home from './pages/Home';
+import PokemonDetailPage from './pages/PokemonDetailPage';
+import FavoritesPage from './pages/FavoritesPage';
+import ComparisonPage from './pages/ComparisonPage';
 
 function App() {
-  const [selectedPokemon, setSelectedPokemon] = useState(null);
-
   return (
-    <div className="min-h-screen bg-gray-900 text-white dark">
-      <Home setSelectedPokemon={setSelectedPokemon} selectedPokemon={selectedPokemon} />
-    </div>
+    <PokemonProvider>
+      <Router>
+        <div className="dark min-h-screen bg-gray-900 text-white">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ErrorBoundary>
+                  <Home setSelectedPokemon={() => {}} selectedPokemon={null} />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/pokemon/:id"
+              element={
+                <ErrorBoundary>
+                  <PokemonDetailPage />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/favorites"
+              element={
+                <ErrorBoundary>
+                  <FavoritesPage />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/compare"
+              element={
+                <ErrorBoundary>
+                  <ComparisonPage />
+                </ErrorBoundary>
+              }
+            />
+          </Routes>
+        </div>
+      </Router>
+    </PokemonProvider>
   );
 }
 

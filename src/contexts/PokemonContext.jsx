@@ -1,14 +1,24 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import axios from 'axios';
 
 const TOTAL_POKEMON = 151; // First 151 Pokémon (Kanto)
 const BATCH_SIZE = 20; // Fetch 20 Pokémon details at a time
 const TOTAL_BATCHES = Math.ceil(TOTAL_POKEMON / BATCH_SIZE); // 8 batches
 
-export function usePokemon(currentBatch = 1, searchTerm = '') {
+const PokemonContext = createContext();
+
+export function PokemonProvider({ children }) {
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem('favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [comparison, setComparison] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [filterMode, setFilterMode] = useState('or');
+
+  // Integrated usePokemon logic
   const [pokemonBatches, setPokemonBatches] = useState(() => {
     const saved = localStorage.getItem('pokemonBatches');
-    // Only load the first batch from localStorage
     const parsed = saved ? JSON.parse(saved) : {};
     return parsed[0] ? { 0: parsed[0] } : {};
   });
@@ -57,7 +67,6 @@ export function usePokemon(currentBatch = 1, searchTerm = '') {
           const firstBatch = await fetchBatch(0);
           updatedBatches[0] = { data: firstBatch, timestamp: Date.now() };
           setPokemonBatches(updatedBatches);
-          // Only store the first batch in localStorage
           localStorage.setItem('pokemonBatches', JSON.stringify({ 0: updatedBatches[0] }));
         }
 
@@ -84,7 +93,6 @@ export function usePokemon(currentBatch = 1, searchTerm = '') {
     fetchData();
   }, [fetchBatch, pokemonBatches]);
 
-  // Fetch remaining batches in the background with a delay
   useEffect(() => {
     const fetchBackgroundBatches = async () => {
       let updatedBatches = { ...pokemonBatches };
@@ -92,12 +100,10 @@ export function usePokemon(currentBatch = 1, searchTerm = '') {
       for (let i = 1; i < TOTAL_BATCHES; i++) {
         if (!updatedBatches[i]) {
           try {
-            // Add a delay to avoid rate limiting (500ms between requests)
             await new Promise((resolve) => setTimeout(resolve, 500));
             const batch = await fetchBatch(i);
             updatedBatches[i] = { data: batch, timestamp: Date.now() };
             setPokemonBatches({ ...updatedBatches });
-            // Do not store these batches in localStorage
           } catch (err) {
             console.error(`Background fetch failed for batch ${i}:`, err);
           }
@@ -110,43 +116,68 @@ export function usePokemon(currentBatch = 1, searchTerm = '') {
     }
   }, [fetchBatch, pokemonBatches]);
 
-  // Combine all batches into a single list for search
   const allPokemon = useMemo(() => {
     return Object.values(pokemonBatches)
       .flatMap((batch) => batch.data)
       .filter(Boolean);
   }, [pokemonBatches]);
 
-  // Filter based on search term
-  const filteredPokemon = useMemo(() => {
-    return allPokemon.filter((pokemon) =>
-      pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [allPokemon, searchTerm]);
-
-  // Select the current batch (adjusted for filtered Pokémon)
-  const currentBatchPokemon = useMemo(() => {
-    const batchIndex = currentBatch - 1;
-    const start = batchIndex * BATCH_SIZE;
-    const end = start + BATCH_SIZE;
-    return filteredPokemon.slice(start, end);
-  }, [filteredPokemon, currentBatch]);
-
-  // Calculate total batches after filtering
-  const totalFilteredBatches = useMemo(() => {
-    return Math.ceil(filteredPokemon.length / BATCH_SIZE);
-  }, [filteredPokemon]);
-
-  // Memoize types to prevent re-renders
   const memoizedTypes = useMemo(() => types, [types]);
 
-  return {
-    pokemonList: currentBatchPokemon,
-    totalPokemon: filteredPokemon.length,
-    totalBatches: totalFilteredBatches,
-    allPokemon, // For search across all
-    types: memoizedTypes,
-    loading,
-    error,
-  };
+  const toggleFavorite = useCallback((pokemonId) => {
+    setFavorites((prev) => {
+      const newFavorites = prev.includes(pokemonId)
+        ? prev.filter((id) => id !== pokemonId)
+        : [...prev, pokemonId];
+      localStorage.setItem('favorites', JSON.stringify(newFavorites));
+      return newFavorites;
+    });
+  }, []);
+
+  const addToComparison = useCallback((pokemon) => {
+    setComparison((prev) => {
+      if (prev.length >= 2) return [prev[1], pokemon]; // Keep only 2 Pokémon
+      if (prev.some((p) => p.id === pokemon.id)) return prev;
+      return [...prev, pokemon];
+    });
+  }, []);
+
+  const removeFromComparison = useCallback((pokemonId) => {
+    setComparison((prev) => prev.filter((p) => p.id !== pokemonId));
+  }, []);
+
+  const clearComparison = useCallback(() => {
+    setComparison([]);
+  }, []);
+
+  return (
+    <PokemonContext.Provider
+      value={{
+        favorites,
+        toggleFavorite,
+        comparison,
+        addToComparison,
+        removeFromComparison,
+        clearComparison,
+        selectedTypes,
+        setSelectedTypes,
+        filterMode,
+        setFilterMode,
+        allPokemon,
+        types: memoizedTypes,
+        loading,
+        error,
+      }}
+    >
+      {children}
+    </PokemonContext.Provider>
+  );
+}
+
+export function usePokemonContext() {
+  const context = useContext(PokemonContext);
+  if (!context) {
+    throw new Error('usePokemonContext must be used within a PokemonProvider');
+  }
+  return context;
 }

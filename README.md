@@ -1,104 +1,130 @@
-# PokeExplorer
+PokeExplorer
+A small app for my Internship Assignment.
+🌟 Features
+Data Integration
 
-A Small app for my Internship Assignment 
-
-## 🌟 Features
-
-### Data Integration
-- ✅ Fetches first 151 original Pokémon from PokeAPI
-- ✅ Displays comprehensive information for each Pokémon:
-  - Name and ID number
-  - Official sprite image
-  - Type(s)
-  - Detailed stats in modal view
-
-### Advanced Search & Filtering
-- ✅ Real-time search functionality with debouncing
-- ✅ Type-based filtering with:
-  - Multiple type selection
-  - AND/OR logic toggle
-  - Quick filter reset
-- ✅ Pagination (20 Pokémon per page)
-
-### Modern UI/UX
-- ✅ Responsive design that works across all devices
-- ✅ Dark theme with modern aesthetic
-- ✅ Interactive components with hover effects
-- ✅ Loading skeletons for better user experience
-- ✅ Modal view for detailed Pokémon information
-- ✅ Smooth animations and transitions
-
-## 🚀 Technical Implementation
-
-### Core Technologies
-- React (with Hooks)
-- Tailwind CSS
-- PokeAPI
-- Axios for API calls
-- Headless UI for accessible components
-
-### Key Features
-- Functional components with React Hooks
-- Custom hooks for data fetching
-- Debounced search implementation
-- Responsive grid layout
-- Error boundary implementation
-- Loading state management
-- Edge case handling
+✅ Fetches first 151 Pokémon from PokeAPI
+✅ Displays Pokémon info:
+Name, ID
+Sprite image
+Type(s)
+Stats in detail view
 
 
-## 🌐 Live Demo
 
-[View Live Demo](https://pokeexplorer.vercel.app)
+Advanced Search & Filtering
 
-## 💻 Local Development
+✅ Real-time search with debouncing
+✅ Type filtering:
+Multi-type selection
+AND/OR logic
+Reset
 
-1. Clone the repository:
-```bash
+
+✅ Pagination (20 per page)
+
+Modern UI/UX
+
+✅ Responsive design
+✅ Dark theme
+✅ Interactive components
+✅ Loading skeletons
+✅ Route-based navigation
+✅ Animations
+
+🚀 Technical Implementation
+Core Technologies
+
+React (Hooks)
+Tailwind CSS
+PokeAPI
+Axios
+Headless UI
+
+Development Approach
+Data Fetching
+Fetched 151 Pokémon via PokeAPI using Axios in usePokemonContext. Stored in React Context for global access, avoiding redundant calls. Extracted types for filtering.
+React Hooks
+
+useState, useEffect: Data fetching, state management in usePokemonContext.
+useMemo: Optimized filtering in Home, FavoritesPage, ComparisonPage.
+useCallback: Memoized toggleFavorite, addToComparison.
+Custom Hooks: useEvolution for evolution chains, useDebounce for search.
+
+Optimization
+
+Global state with PokemonContext
+Debounced search via useDebounce
+Local pagination
+React Router for navigation
+React.memo on PokemonCard
+Lazy-loaded images
+
+Component Structure
+Reusable components: PokemonCard, SearchBar, TypeFilter, SortSelect, Pagination, Header. Styled with Tailwind CSS for responsiveness.
+Error Handling & UX
+Error boundaries, loading skeletons, empty state messages.
+Key Features
+
+Functional components
+React Hooks
+Debounced search
+Responsive grid
+Error boundaries
+Loading states
+Edge cases
+
+🌐 Live Demo
+View Live Demo
+💻 Local Development
+
+Clone the repository:
+
 git clone https://github.com/your-username/PokeExplorer.git
-```
 
-2. Install dependencies:
-```bash
+
+Install dependencies:
+
 cd PokeExplorer
 npm install
-```
 
-3. Start the development server:
-```bash
+
+Start the development server:
+
 npm run dev
-```
 
-4. Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-## ✨ Requirements Fulfilled
+Open http://localhost:5173 in your browser.
 
-While I haven't included any additional features in my app, the core requirements have been addressed with the utmost attention to detail
+✨ Requirements Fulfilled
+Core requirements addressed with attention to detail:
+1. Data Fetching ✅
 
-### 1. Data Fetching ✅
-- [x] First 151 Pokémon data
-- [x] Complete Pokémon information
-- [x] Efficient data loading
+ 151 Pokémon
+ Complete info
+ Efficient loading
 
-### 2. Search Functionality ✅
-- [x] Real-time name search
-- [x] Type filtering
-- [x] Loading states
-- [x] Empty states
+2. Search Functionality ✅
 
-### 3. UI/UX ✅
-- [x] Responsive design
-- [x] Modern interface
-- [x] Intuitive navigation
-- [x] Loading indicators
+ Real-time search
+ Type filtering
+ Loading states
+ Empty states
 
-### 4. Technical Requirements ✅
-- [x] Functional components
-- [x] React Hooks
-- [x] Error handling
-- [x] Loading states
-- [x] Reusable components
+3. UI/UX ✅
 
-## 📝 License
+ Responsive
+ Modern UI
+ Navigation
+ Loading indicators
 
+4. Technical Requirements ✅
+
+ Functional components
+ React Hooks
+ Error handling
+ Loading states
+ Reusable components
+
+📝 License
 MIT License - feel free to use this project for learning or personal use.

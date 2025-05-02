@@ -1,35 +1,30 @@
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
 import PokemonCard from '../components/PokemonCard.jsx';
 import Pagination from '../components/Pagination.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import TypeFilter from '../components/TypeFilter.jsx';
 import SortSelect from '../components/SortSelect.jsx';
 import Header from '../components/Header.jsx';
-import { usePokemon } from '../hooks/usePokemon.js';
 import { usePokemonContext } from '../contexts/PokemonContext.jsx';
 import { SORT_OPTIONS, sortPokemon } from '../features/sorting.js';
+import { HeartIcon } from '@heroicons/react/20/solid';
 
 function FavoritesPage() {
-  // Existing state
   const [currentBatch, setCurrentBatch] = useState(1);
-  const [selectedPokemon, setSelectedPokemon] = useState(null);
-  const { favorites } = usePokemonContext();
-  const { allPokemon, loading, error, types } = usePokemon(currentBatch);
-
-  // New state for filters and sorting
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [filterMode, setFilterMode] = useState('or');
   const [sortOption, setSortOption] = useState(SORT_OPTIONS.ID_ASC);
 
+  const { allPokemon, loading, error, types, favorites, toggleFavorite } = usePokemonContext();
+
+  const BATCH_SIZE = 20;
+
   const filteredFavorites = useMemo(() => {
-    // First filter favorites
     const favoritePokemon = allPokemon.filter((pokemon) => 
       favorites.includes(pokemon.id)
     );
 
-    // Then apply search and type filters
     const filtered = favoritePokemon.filter((pokemon) => {
       const matchesSearch = pokemon.name
         .toLowerCase()
@@ -48,17 +43,25 @@ function FavoritesPage() {
       return matchesSearch && matchesType;
     });
 
-    // Finally, sort the filtered results
     return sortPokemon(filtered, sortOption);
   }, [allPokemon, favorites, searchTerm, selectedTypes, filterMode, sortOption]);
 
-  // Update pagination calculation
-  const totalFavoritesBatches = Math.ceil(filteredFavorites.length / 20);
+  const totalFavoritesBatches = useMemo(() => {
+    return Math.ceil(filteredFavorites.length / BATCH_SIZE);
+  }, [filteredFavorites]);
+
   const currentFavorites = useMemo(() => {
     const batchIndex = currentBatch - 1;
-    const start = batchIndex * 20;
-    const end = start + 20;
+    const start = batchIndex * BATCH_SIZE;
+    const end = start + BATCH_SIZE;
     return filteredFavorites.slice(start, end);
+  }, [filteredFavorites, currentBatch]);
+
+  // Reset currentBatch if filteredFavorites is empty
+  useEffect(() => {
+    if (filteredFavorites.length === 0 && currentBatch > 1) {
+      setCurrentBatch(1);
+    }
   }, [filteredFavorites, currentBatch]);
 
   return (
@@ -117,11 +120,24 @@ function FavoritesPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {currentFavorites.map((pokemon) => (
-              <PokemonCard
-                key={pokemon.id}
-                pokemon={pokemon}
-                onClick={() => setSelectedPokemon(pokemon)}
-              />
+              <div key={pokemon.id} className="relative">
+                <PokemonCard
+                  pokemon={pokemon}
+                  linkTo={`/pokemon/${pokemon.id}`}
+                />
+                <button
+                  onClick={() => toggleFavorite(pokemon.id)}
+                  className="absolute top-2 right-2 p-1"
+                >
+                  <HeartIcon
+                    className={`w-6 h-6 ${
+                      favorites.includes(pokemon.id)
+                        ? 'text-red-500 fill-red-500'
+                        : 'text-gray-400 fill-none stroke-current stroke-2'
+                    } hover:text-red-400 hover:fill-red-400 transition-colors`}
+                  />
+                </button>
+              </div>
             ))}
           </div>
         )}
@@ -144,7 +160,6 @@ function FavoritesPage() {
             totalPokemon={filteredFavorites.length}
           />
         )}
-
       </main>
     </div>
   );

@@ -209,7 +209,7 @@ function ComparisonPage() {
                     
                     <div className="flex flex-col items-center">
                       <img
-                        src={comparedPokemon[0].sprites?.other['official-artwork']?.front_default || comparedPokemon[0].sprites?.front_default || '/placeholder.png'}
+                        src={ comparedPokemon[0].sprites?.front_default || '/placeholder.png'}
                         alt={comparedPokemon[0].name}
                         className="w-48 h-48 object-contain hover:scale-105 transition-transform"
                       />
@@ -291,7 +291,7 @@ function ComparisonPage() {
                     
                     <div className="flex flex-col items-center">
                       <img
-                        src={comparedPokemon[1].sprites?.other['official-artwork']?.front_default || comparedPokemon[1].sprites?.front_default || '/placeholder.png'}
+                        src={comparedPokemon[1].sprites?.front_default || '/placeholder.png'}
                         alt={comparedPokemon[1].name}
                         className="w-48 h-48 object-contain hover:scale-105 transition-transform"
                       />
@@ -536,7 +536,7 @@ function ComparisonPage() {
                   >
                     <div className="relative">
                       <img
-                        src={pokemon.sprites?.other['official-artwork']?.front_default || pokemon.sprites?.front_default || '/placeholder.png'}
+                        src={pokemon.sprites?.front_default || '/placeholder.png'}
                         alt={pokemon.name}
                         className="w-full h-24 object-contain mx-auto"
                       />
